@@ -1,0 +1,23 @@
+{% extends "includes/base.html" %}
+{% load cache %}
+{% block title %} Записи сообщества {{ group.title }} {% endblock %}
+{% block content %}
+{% cache 20 group_page page.number %}
+<main role="main" class="container">
+    <div class="row justify-content-center">
+    <div class="col-md-10">
+
+    <h1>{{ group.title }}</h1>
+    <p>{{ group.description }}</p>
+
+         {% for post in page %}
+        {% include "includes/post_item.html" with post=post %}
+        {% endfor %}
+            {% if page.has_other_pages %}
+            {% include "includes/paginator.html" with items=page paginator=paginator%}
+    {% endif %}
+    {% endcache %}
+        </div>
+    </div>
+</main>
+{% endblock %}

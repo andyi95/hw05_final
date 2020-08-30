@@ -1,0 +1,15 @@
+{% extends "includes/base.html" %}
+{% block title %} Пост {% endblock %}
+{% load user_filters %}
+{% load thumbnail %}
+{% block content %}
+<main role="main" class="container">
+    <div class="row">
+{% include 'includes/author_card.html' %}
+    <div class="col-md-9">{% include 'includes/post_item.html' with post=post%}</div>
+   </div>
+{% include 'posts/comments.html' %}
+</main>
+{% endblock %}
+
+

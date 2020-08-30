@@ -1,0 +1,55 @@
+<div class="card mb-3 mt-1 shadow-sm">
+{% load thumbnail %}
+    <!-- Отображение картинки -->
+    {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+    <img class="img-thumbnail" src="{{ im.url }}" />
+    {% endthumbnail %}
+    <!-- Отображение текста поста -->
+    <div class="card-body">
+        <p class="card-text">
+           <p class=".d-inline-flex h5 text-gray-dark mb-2">
+                        <a href="{% url 'profile' post.author.username %}">@{{ post.author.username }}</a>
+        {% if post.group %}
+        <a class="float-right" href="{% url 'group' post.group.slug %}">
+                #{{ post.group.title }}
+        </a>
+        {% endif %}</p>
+    <!-- в случае, если текст поста очень большой, то его укорачиваем и предлагаем переити на страницу поста!-->
+     {% if full_text or post.text|length <= 300 %}
+                        <p>{{ post.text|linebreaksbr }}</p>
+                    {% else %}
+                        <p>{{ post.text|linebreaksbr|truncatechars:300 }}
+                            <a class="btn btn-sm text-muted" href="{% url 'post' post.author.username post.id %}" role="button">
+                                Читать далее>>
+                            </a>
+                        </p>
+                    {% endif %}
+                </div>
+
+
+        <!-- Отображение ссылки на комментарии -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="btn-group ">
+                <a class="btn btn-sm text-muted" href="{% url 'add_comment' post.author.username post.id %}" role="button">
+                    {% if post.comments.exists %}
+                    {{ post.comments.count }} комментариев
+                    {% else%}
+                    Добавить комментарий
+                    {% endif %}
+                </a>
+
+                <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group ">
+                                 {% if user == post.author %}
+                 <a class="btn btn-sm text-muted" href="{% url 'post_edit' post.author.username post.id %}" role="button">
+                        Редактировать
+                </a>
+                {% endif %}
+                        </div></div></div>
+                <div class="d-flex justify-content-between align-items-right mr-2">
+                <a class="btn btn-sm text-muted" href="{% url 'post' post.author.username post.id %}">
+                    {{ post.pub_date|date:"d M Y" }}</a>
+                </div>
+        </div>
+</div>
+
