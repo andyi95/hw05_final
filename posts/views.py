@@ -13,9 +13,7 @@ def index(request):
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     if request.user.is_authenticated:
-        # узнаем, подписан ли на кого-то залогиненный пользователь
         follow = Follow.objects.filter(user=request.user).exists()
-        # если подписан - переходит на страницу с подписанными авторами
         return render(request, 'index.html', {
             'page': page,
             'paginator': paginator, 'follow': follow,
@@ -30,20 +28,6 @@ def index(request):
     )
 
 
-def group_posts(request, slug):
-    group = get_object_or_404(Group, slug=slug)
-    posts = group.posts.all()
-    paginator = Paginator(posts, 10)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-    return render(request, 'group.html', {
-        'group': group,
-        'page': page,
-        'posts': posts,
-        'paginator': paginator
-    })
-
-
 @login_required
 def new_post(request):
     form = PostForm(request.POST or None, files=request.FILES or None)
@@ -56,6 +40,24 @@ def new_post(request):
     form.instance.author = request.user
     form.save()
     return redirect('index')
+
+
+@login_required
+def post_edit(request, username, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.user != post.author:
+        return redirect('post', username=post.author, post_id=post_id)
+    form = PostForm(
+        request.POST or None, files=request.FILES or None, instance=post
+    )
+    if form.is_valid():
+        form.save()
+        return redirect('post', username=username, post_id=post_id)
+    return render(
+        request,
+        'posts/new_post.html',
+        {'form': form, 'post': post}
+    )
 
 
 def profile(request, username):
@@ -101,22 +103,18 @@ def post_view(request, username, post_id, form=None):
     )
 
 
-@login_required
-def post_edit(request, username, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    if request.user != post.author:
-        return redirect('post', username=post.author, post_id=post_id)
-    form = PostForm(
-        request.POST or None, files=request.FILES or None, instance=post
-    )
-    if form.is_valid():
-        form.save()
-        return redirect('post', username=username, post_id=post_id)
-    return render(
-        request,
-        'posts/new_post.html',
-        {'form': form, 'post': post}
-    )
+def group_posts(request, slug):
+    group = get_object_or_404(Group, slug=slug)
+    posts = group.posts.all()
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    return render(request, 'group.html', {
+        'group': group,
+        'page': page,
+        'posts': posts,
+        'paginator': paginator
+    })
 
 
 @login_required
