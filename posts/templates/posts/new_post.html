@@ -24,9 +24,9 @@
                         {% endfor %}
                     {% endif %}
                 {% if post %}
-                    <form method="post" enctype="multipart/form-data" action="{% url 'new_post' %}">
-                 {% else %}
                     <form method="post" enctype="multipart/form-data">
+                 {% else %}
+                    <form method="post" enctype="multipart/form-data" action="{% url 'new_post' %}">
                 {% endif %}
                         {% csrf_token %}
                         {% for field in form %}

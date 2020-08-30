@@ -25,3 +25,4 @@ db*journal
 .idea — копия/
 requirements.txt
 sent_emails/
+.flake8
