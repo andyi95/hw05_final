@@ -1,6 +1,7 @@
 import io
 
 from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -33,6 +34,7 @@ class Fixtures(TestCase):
                     post = response.context['post']
                 self.check_equality(post, text, user, group)
 
+
     def check_equality(self, e_posts, text, user, group):
         '''Отдельный метод сверки всех полей, вывода соответсвующих
         сообщений об ошибках и получения поста на выходе'''
@@ -53,6 +55,11 @@ class Fixtures(TestCase):
         self.assertEqual(e_post.group, group,
                          msg='Сообщество поста не соответствует заданному')
         return e_post
+
+    # Добавили метод для очистки всего ненужного ;)
+    def tearDown(self):
+        key = make_template_fragment_key('index')
+        cache.delete(key)
 
 
 class TestProfile(TestCase):
@@ -339,6 +346,11 @@ class ImageTest(TestCase):
             msg='Форма создания поста позволяет загружать невалидные файлы'
         )
 
+    # Подчищаем все ненужное
+    def tearDown(self):
+        key = make_template_fragment_key('index')
+        cache.delete(key)
+
 
 class TestFollow(TestCase):
     def setUp(self):
@@ -397,7 +409,7 @@ class TestFollow(TestCase):
         self.client1.get(
             reverse('profile_unfollow', kwargs={'username': self.user2})
         )
-        followers = Follow.objects.filter(author=self.user2.id)
+        followers = Follow.objects.all()
         self.assertEqual(followers.count(), 0, 'Не удалось отписаться')
 
     def test_follow_unauth(self):

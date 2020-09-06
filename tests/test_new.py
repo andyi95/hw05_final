@@ -1,10 +1,9 @@
 from io import BytesIO
 
 import pytest
+from PIL import Image
 from django import forms
 from django.core.files.base import File
-from PIL import Image
-
 from posts.models import Post
 
 

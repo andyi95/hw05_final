@@ -1,5 +1,6 @@
 import pytest
-from django.core.paginator import Page, Paginator
+
+from django.core.paginator import Paginator, Page
 
 
 class TestGroupPaginatorView:
