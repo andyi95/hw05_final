@@ -334,10 +334,13 @@ class ImageTest(TestCase):
                 'image': wrong_image
             }
         )
-        self.assertContains(
+        self.assertFormError(
             response,
-            'alert',
-            msg_prefix='Форма не вернула сообщение об ошибке'
+            'form',
+            'image',
+            errors='Загрузите правильное изображение.'
+                   ' Файл, который вы загрузили, поврежден или не является'
+                   ' изображением.'
         )
         posts = Post.objects.all()
         # Проверим, что сайт не позволил создать пост
