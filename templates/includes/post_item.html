@@ -33,8 +33,10 @@
                 <a class="btn btn-sm text-muted" href="{% url 'add_comment' post.author.username post.id %}" role="button">
                     {% if post.comments.exists %}
                     {{ post.comments.count }} комментариев
-                    {% else%}
+                    {% elif user.is_authenticated%}
                     Добавить комментарий
+                    {% else %}
+                    Нет комментариев
                     {% endif %}
                 </a>
 

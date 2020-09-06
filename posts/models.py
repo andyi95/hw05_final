@@ -31,33 +31,41 @@ class Post(models.Model):
         help_text='Сообщество,'
                   ' в которое отправляется сообщение.'
     )
-    image = models.ImageField(upload_to='posts/', blank=True, null=True)
-    
+    image = models.ImageField(
+        upload_to='posts/',
+        blank=True, null=True,
+        help_text='Изображение к посту'
+    )
+
     class Meta:
         ordering = ('-pub_date',)
 
     def __str__(self):
-        return self.text
+        return self.text[:40]
 
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post,
-                             on_delete=models.CASCADE,
-                             related_name='comments',
-                             verbose_name='Пост'
-                             )
-    author = models.ForeignKey(User,
-                               on_delete=models.CASCADE,
-                               related_name='author_comments',
-                               verbose_name='Автор'
-                               )
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Пост'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='author_comments',
+        verbose_name='Автор'
+    )
     text = models.TextField(verbose_name='Текст комментария')
-    created = models.DateTimeField(auto_now_add=True,
-                                   verbose_name='Дата публикации'
-                                   )
+    created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата публикации'
+    )
 
     def __str__(self):
-        return self.text
+        return self.text[:40]
+
 
 class Follow(models.Model):
     user = models.ForeignKey(User,
@@ -73,6 +81,3 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = ['user', 'author']
-
-    def __str__(self):
-        return self.text

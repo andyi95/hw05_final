@@ -2,7 +2,6 @@
 {% load cache %}
 {% block title %}Последние обновления на сайте{% endblock %}
 {% block content %}
-{% cache 20 index_page page.number %}
 <main role="main" class="container">
         {% include "includes/menu.html" with index=True %}
 <div class="row justify-content-center">
@@ -15,7 +14,6 @@
         {% if page.has_other_pages %}
         {% include "includes/paginator.html" with items=page paginator=paginator%}
     {% endif %}
-    {% endcache %}
  </div>
 </div>
 </main>

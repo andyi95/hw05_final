@@ -6,9 +6,9 @@
 <main role="main" class="container">
     <div class="row">
 {% include 'includes/author_card.html' %}
-    <div class="col-md-9">{% include 'includes/post_item.html' with post=post%}</div>
+    <div class="col-md-9">{% include 'includes/post_item.html' with post=post%}
+        {% include 'posts/comments.html'%}</div>
    </div>
-{% include 'posts/comments.html' %}
 </main>
 {% endblock %}
 

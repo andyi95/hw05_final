@@ -10,7 +10,7 @@
         name="comment_{{ item.id }}"
         >{{ item.author.username }}</a>
     </h5>
-    <h6 class="mt-0">{{ item.created }}</h6>
+    <h6 class="mt-0">{{ item.created | date:"d M Y"}}</h6>
     {{ item.text }}
 </div>
 </div>
