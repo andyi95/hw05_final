@@ -1,4 +1,5 @@
 import io
+import os
 
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
@@ -353,6 +354,8 @@ class ImageTest(TestCase):
     def tearDown(self):
         key = make_template_fragment_key('index')
         cache.delete(key)
+        if os.path.exists('media/posts/small.jpeg'):
+            os.remove('media/posts/small.jpeg')
 
 
 class TestFollow(TestCase):
