@@ -27,4 +27,3 @@ requirements.txt
 sent_emails/
 .flake8
 .run/
-/.run/

@@ -1,10 +1,10 @@
 import io
-from unittest import skip
 
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
+
 from PIL import Image
 
 from .models import Comment, Follow, Group, Post, User
@@ -229,8 +229,8 @@ class TestPostCreaton(Fixtures):
         )
         response = self.client.get(reverse('index'))
         self.assertIsNone(response.context,
-                msg='Похоже, что кэширование не работает'
-            )
+                          msg='Похоже, что кэширование не работает'
+                          )
 
 
 class TestUnAuthAccess(TestCase):
@@ -334,8 +334,10 @@ class ImageTest(TestCase):
         )
         posts = Post.objects.all()
         # Проверим, что сайт не позволил создать пост
-        self.assertEqual(posts.count(), 0, msg='Форма создания поста позволяет'
-                                               'загружать невалидные файлы')
+        self.assertEqual(
+            posts.count(), 0,
+            msg='Форма создания поста позволяет загружать невалидные файлы'
+        )
 
 
 class TestFollow(TestCase):
@@ -358,7 +360,8 @@ class TestFollow(TestCase):
         self.client3.force_login(self.user3)
 
     def test_follow_auth(self):
-        # Подписываемся
+        '''Проверка возможности авторизированному пользователю подписываться
+        и отписываться от автора'''
         response = self.client1.get(
             reverse(
                 'profile_follow',
@@ -375,22 +378,31 @@ class TestFollow(TestCase):
         # Проверяем, что HaroldFinch подписан на JohnJeese, а у JohnReese
         # Harold есть в подписках
         follow = Follow.objects.all()
-        self.assertEqual(follow.count(), 1,
-                          'Количество подписок не соответсвует ожидаемому')
+        self.assertEqual(
+            follow.count(), 1,
+            'Количество подписок не соответсвует ожидаемому'
+        )
         follow = follow.last()
-        self.assertEqual(follow.author.id, self.user2.id,
-                         msg='Несоответствие автора')
-        self.assertEqual(follow.user.id, self.user1.id,
-                         msg='Несоответствие подписчика')
+        self.assertEqual(
+            follow.author.id,
+            self.user2.id,
+            msg='Несоответствие автора'
+        )
+        self.assertEqual(
+            follow.user.id,
+            self.user1.id,
+            msg='Несоответствие подписчика'
+        )
         # Отписываемся
-        self.client1.get(reverse('profile_unfollow',
-                                 kwargs={'username': self.user2}))
+        self.client1.get(
+            reverse('profile_unfollow', kwargs={'username': self.user2})
+        )
         followers = Follow.objects.filter(author=self.user2.id)
         self.assertEqual(followers.count(), 0, 'Не удалось отписаться')
 
     def test_follow_unauth(self):
-        # Проверяем поведение сервера в случае попытки неавторизованной
-        # подписки или отписки
+        '''Проверка поведение сервера в случае попытки неавторизованной
+         подписки или отписки'''
         login_url = reverse('login')
         urls = (
             reverse(
@@ -419,12 +431,14 @@ class TestFollow(TestCase):
                 self.assertEqual(followers.count(), 0)
 
     def test_self_follow(self):
-        # Пытаемся подписаться на самого себя
+        '''Проверка невозможности подписки на самого себя'''
         self.client1.get(reverse('profile_follow', args=[self.user1.username]))
         # Убедимся, что количество подписчиков и подписок не изменилось
         followers = Follow.objects.filter(author=self.user1.id)
-        self.assertEqual(followers.count(), 0,
-                         msg='Сайт позволяет подписаться на самого себя')
+        self.assertEqual(
+            followers.count(), 0,
+            msg='Сайт позволяет подписаться на самого себя'
+        )
 
 
 class TestFeed(Fixtures):
@@ -456,8 +470,12 @@ class TestFeed(Fixtures):
         '''Проверка появления новой записи в ленте у подписсчика,
         но у других пользователей лента
         должна оставаться пустой'''
-        self.client.get(reverse('profile_follow',
-                                 kwargs={'username': self.user2.username}))
+        self.client.get(
+            reverse(
+                'profile_follow',
+                kwargs={'username': self.user2.username}
+            )
+        )
         urls = (
             reverse('follow_index'),
         )
@@ -527,22 +545,27 @@ class TestComment(Fixtures):
             e_post = comments.last()
         else:
             e_post = comments
-        self.assertEqual(e_post.post, self.post,
-                         msg='Пост комментария не соответствует заданному')
-        self.assertEqual(e_post.text, self.comment_text,
-                         msg='Текст комментария не соотвествует заданному или '
-                             'отсутствует')
-        self.assertEqual(e_post.author, self.user,
-                         msg='Автор комментария не соотвествует заданному')
-
+        self.assertEqual(
+            e_post.post, self.post,
+            msg='Пост комментария не соответствует заданному'
+        )
+        self.assertEqual(
+            e_post.text, self.comment_text,
+            msg='Текст комментария не соотвествует заданному или отсутствует'
+        )
+        self.assertEqual(
+            e_post.author, self.user,
+            msg='Автор комментария не соотвествует заданному'
+        )
 
     def test_comment_unauth(self):
         # Пытаемся написать комментарий неавторизовавшись на сайте
         self.client2.post(
-            reverse('add_comment', args=[
-                self.user.username,
-                self.post.id
-            ]), {'text': 'This comment should not be here'})
+            reverse(
+                'add_comment', args=[self.user.username, self.post.id]
+            ),
+            {'text': 'This comment should not be here'}
+        )
         # Проверяем, не попал-ли комментарий на сайт, проверки
         # через объект будет достаточно
         comment_count = Comment.objects.count()
@@ -551,3 +574,23 @@ class TestComment(Fixtures):
                              ' незарегистрированным пользователям')
 
 
+class TestHTTPCodes(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_not_found(self):
+        '''Проверка возвращаемых значений сервера для различных
+         несуществующих страниц'''
+        urls = (
+            'somethingwrong',
+            '256',
+            'group/qwerty',
+            'test/56',
+            'test/56/edit'
+        )
+        for url in urls:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertEqual(
+                    response.status_code, 404,
+                    msg='Сервер вернул неожиданный код ответа')
