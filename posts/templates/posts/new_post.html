@@ -1,5 +1,6 @@
 {% extends "includes/base.html" %}
 {% block title %}
+{{post|yesno: '(Редактировать пост),(Создать новый пост)'}}
     {% if post %}
     Редактировать пост
     {% else %}
