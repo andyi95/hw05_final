@@ -34,6 +34,7 @@ class Post(models.Model):
     image = models.ImageField(
         upload_to='posts/',
         blank=True, null=True,
+        verbose_name='Изображение поста',
         help_text='Изображение к посту'
     )
 
@@ -68,16 +69,18 @@ class Comment(models.Model):
 
 
 class Follow(models.Model):
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE,
-                             related_name='follower',
-                             verbose_name='Подписчик'
-                             )
-    author = models.ForeignKey(User,
-                               on_delete=models.CASCADE,
-                               related_name='following',
-                               verbose_name='Автор'
-                               )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='Подписчик'
+        )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='Автор'
+        )
 
     class Meta:
         unique_together = ['user', 'author']

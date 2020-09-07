@@ -27,3 +27,5 @@ requirements.txt
 sent_emails/
 .flake8
 .run/
+.vscode/
+settings.json

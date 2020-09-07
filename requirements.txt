@@ -20,3 +20,8 @@ sqlparse==0.3.0           # via django
 urllib3==1.25.6           # via requests
 wcwidth==0.1.8            # via pytest
 zipp==2.2.0               # via importlib-metadata
+flake8==3.8.3
+flake8-builtins==1.5.3
+flake8-import-order==0.18.1
+flake8-quotes==3.2.0
+isort==5.4.2

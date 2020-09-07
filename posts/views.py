@@ -1,6 +1,3 @@
-# Я очень извиняюсь за непоследовательность в коде - последствия спешной и
-# параллельной работой на проектом 4 и 5 спринтов
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
@@ -81,11 +78,10 @@ def post_edit(request, username, post_id):
 def profile(request, username):
     user_profile = get_object_or_404(User, username=username)
     posts = user_profile.posts.all()
-    try:
-        following = Follow.objects.filter(author=user_profile,
-                                          user=request.user).exists()
-    except TypeError:
-        following = True
+    following = Follow.objects.filter(
+            author=user_profile,
+            user=request.user
+            ).exists()
     paginator = Paginator(posts, 10)
     page_num = request.GET.get('page')
     page = paginator.get_page(page_num)
