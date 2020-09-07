@@ -1,11 +1,6 @@
 {% extends "includes/base.html" %}
 {% block title %}
-{{post|yesno: '(Редактировать пост),(Создать новый пост)'}}
-    {% if post %}
-    Редактировать пост
-    {% else %}
-    Создать новый пост
-    {% endif %}
+    {{ post|yesno:"Редактировать пост, Создать новый пост, None" }}
 {% endblock %}
 {% block content %}
 {% load user_filters %}

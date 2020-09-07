@@ -29,3 +29,4 @@ sent_emails/
 .run/
 .vscode/
 settings.json
+.pylintrc

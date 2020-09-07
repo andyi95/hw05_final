@@ -8,17 +8,14 @@ from .forms import CommentForm, PostForm
 from .models import Comment, Follow, Group, Post
 
 
-@cache_page(20)
+@cache_page(20, cache='default', key_prefix='')
 def index(request):
     latest = Post.objects.select_related('group', 'author').all()
     paginator = Paginator(latest, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     # узнаем, подписан ли на кого-то залогиненный пользователь
-    try:
-        follow = Follow.objects.filter(user=request.user).exists()
-    except TypeError:
-        follow = False
+    follow = Follow.objects.filter(user__username=request.user).exists()
     return render(
         request,
         'index.html',
@@ -78,10 +75,10 @@ def post_edit(request, username, post_id):
 def profile(request, username):
     user_profile = get_object_or_404(User, username=username)
     posts = user_profile.posts.all()
+    # такой вариант работает без try и if :) в index тоже
     following = Follow.objects.filter(
-            author=user_profile,
-            user=request.user
-            ).exists()
+        author=user_profile,
+        user__username=request.user).exists()
     paginator = Paginator(posts, 10)
     page_num = request.GET.get('page')
     page = paginator.get_page(page_num)
@@ -157,7 +154,7 @@ def server_error(request):
     return render(request, 'misc/500.html', status=500)
 
 
-def page_not_found(request, exception):
+def page_not_found(request):
     return render(
         request,
         'misc/404.html',

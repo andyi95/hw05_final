@@ -34,7 +34,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'yatube.urls'
-TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -94,9 +94,5 @@ SITE_ID = 1
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': os.path.join(MEDIA_ROOT, 'temp_test'),
-    },
-    'testing': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
