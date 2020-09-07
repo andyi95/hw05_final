@@ -4,11 +4,12 @@ import re
 import shutil
 import tempfile
 
+from PIL import Image
+
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
-from PIL import Image
 
 from .models import Comment, Follow, Group, Post, User
 
@@ -587,7 +588,7 @@ class TestFeed(Fixtures):
             self.assertIsNone(response.context['post'])
 
 
-class TestComment(Fixtures):
+class TestComment(TestCase):
     def setUp(self):
         # Создаем авторизованного и неавторизованного клиентов, тестовый пост
         self.client = Client()
