@@ -1,15 +1,18 @@
 import io
 import os
+import shutil
+import tempfile
 
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
-
 from PIL import Image
 
 from .models import Comment, Follow, Group, Post, User
+
+temp_dir = tempfile.mkdtemp()
 
 
 # Создали отдельный класс с общими методами
@@ -269,6 +272,7 @@ class TestUnAuthAccess(TestCase):
                              ' неавторизованным пользователям')
 
 
+@override_settings(MEDIA_ROOT=(temp_dir + '/media'))
 class ImageTest(TestCase):
     def setUp(self):
         self.client = Client()
@@ -352,10 +356,19 @@ class ImageTest(TestCase):
 
     # Подчищаем все ненужное
     def tearDown(self):
-        key = make_template_fragment_key('index')
-        cache.delete(key)
-        if os.path.exists('media/posts/small.jpeg'):
-            os.remove('media/posts/small.jpeg')
+        cache.clear()
+        [cache.delete(key) for key in cache._cache.keys()]
+        paths = (
+            'media/posts/small.jpeg',
+            'media/posts/image.txt',
+                 )
+        for path in paths:
+            if os.path.exists(path):
+                os.remove(path)
+        shutil.rmtree(
+            temp_dir,
+            ignore_errors=True
+        )
 
 
 class TestFollow(TestCase):
