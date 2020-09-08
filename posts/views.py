@@ -15,7 +15,7 @@ def index(request):
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     # узнаем, подписан ли на кого-то залогиненный пользователь
-    follow = Follow.objects.filter(user__username=request.user).exists()
+    follow = request.user.is_authenticated and Follow.objects.filter(user=request.user)
     return render(
         request,
         'index.html',
@@ -75,10 +75,10 @@ def post_edit(request, username, post_id):
 def profile(request, username):
     user_profile = get_object_or_404(User, username=username)
     posts = user_profile.posts.all()
-    # такой вариант работает без try и if :) в index тоже
-    following = Follow.objects.filter(
+    following = request.user.is_authenticated and Follow.objects.filter(
         author=user_profile,
-        user__username=request.user).exists()
+        user=request.user
+    ).exists()
     paginator = Paginator(posts, 10)
     page_num = request.GET.get('page')
     page = paginator.get_page(page_num)
@@ -145,7 +145,6 @@ def profile_follow(request, username):
 @login_required
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
-    # И ведь действительно работает и так :)
     Follow.objects.filter(user=request.user, author=author).delete()
     return redirect('profile', username)
 

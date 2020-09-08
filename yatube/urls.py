@@ -5,6 +5,9 @@ from django.contrib import admin
 from django.contrib.flatpages import views
 from django.urls import include, path
 
+if settings.DEBUG:
+    import debug_toolbar
+
 handler404 = 'posts.views.page_not_found' # noqa
 handler500 = 'posts.views.server_error' # noqa
 
@@ -28,5 +31,7 @@ urlpatterns = [
     ),
 ]
 
+if settings.DEBUG:
+    urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

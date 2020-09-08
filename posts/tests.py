@@ -4,12 +4,11 @@ import re
 import shutil
 import tempfile
 
-from PIL import Image
-
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
+from PIL import Image
 
 from .models import Comment, Follow, Group, Post, User
 
@@ -26,8 +25,10 @@ class Fixtures(TestCase):
         # кэш уже устарел, всё же пришлось оставить это здесь
         cache.clear()
         for url in urls:
-            with self.subTest(url=url, msg='Запись не найдена'
-                                           ' на странице'):
+            with self.subTest(
+                    url=url,
+                    msg='Запись не найдена на странице'
+            ):
                 response = self.client.get(url)
                 paginator = response.context.get('paginator')
                 if paginator is not None:
@@ -42,14 +43,15 @@ class Fixtures(TestCase):
                 self.check_equality(post, text, user, group)
 
     def check_equality(self, e_posts, text, user, group):
-        '''Отдельный метод сверки всех полей, вывода соответсвующих
-        сообщений об ошибках и получения поста на выходе'''
+        """Отдельный метод сверки всех полей, вывода соответсвующих
+        сообщений об ошибках и получения поста на выходе"""
         # Дабы сделать метод более универсальным, добавим проверку сущности
         # получаемого объекта
         if hasattr(e_posts, 'query'):
-            self.assertEqual(e_posts.count(), 1,
-                             msg='Количество постов не соответствует '
-                                 'заданным')
+            self.assertEqual(
+                e_posts.count(), 1,
+                msg='Количество постов не соответствует заданным'
+            )
             e_post = e_posts.last()
         else:
             e_post = e_posts
@@ -110,8 +112,8 @@ class TestPostCreaton(Fixtures):
         cache.clear()
 
     def test_new_post_auth(self):
-        '''В  следующем тесте создаем пост через HTTP и сверяем соответствие в
-        БД'''
+        """В  следующем тесте создаем пост через HTTP и сверяем соответствие в
+        БД"""
         response = self.client.post(
             reverse('new_post'),
             {
@@ -125,8 +127,8 @@ class TestPostCreaton(Fixtures):
         self.check_equality(posts, self.post_text, self.user, self.group)
 
     def test_post_display(self):
-        '''Создаем пост в БД и сверяем отображение через http запросы к
-        сайту'''
+        """Создаем пост в БД и сверяем отображение через http запросы к
+        сайту"""
         post = Post.objects.create(text=self.post_text,
                                    group=self.group,
                                    author=self.user)
@@ -142,9 +144,9 @@ class TestPostCreaton(Fixtures):
         )
 
     def test_edit(self):
-        '''Создаем пост в БД, редактируем через http и сверяем содержимое на
+        """Создаем пост в БД, редактируем через http и сверяем содержимое на
             всех
-            связанных страницах'''
+            связанных страницах"""
         post = Post.objects.create(
             text=self.post_text,
             author=self.user,
@@ -182,9 +184,9 @@ class TestPostCreaton(Fixtures):
                                   self.group2)
 
     def test_wrong_user_edit(self):
-        '''Создаем пост через БД, далее логинимся под вторым пользователем и
+        """Создаем пост через БД, далее логинимся под вторым пользователем и
             пытаемся изменить текст и сообщество через http,
-            далее проверяем изменения в БД'''
+            далее проверяем изменения в БД"""
         self.post = Post.objects.create(
             text=self.post_text,
             author=self.user, group=self.group
@@ -236,8 +238,8 @@ class TestPostCreaton(Fixtures):
         )
 
     def test_cache(self):
-        '''Проверка работы кэша - создаем пост и сразу смотрим, не появился ли
-        он на главной странице'''
+        """Проверка работы кэша - создаем пост и сразу смотрим, не появился ли
+        он на главной странице"""
         # Загружаем в кэш и открываем главную страницу
         self.client.get(reverse('index'))
         response = self.client.get(reverse('index'))
@@ -329,8 +331,8 @@ class ImageTest(TestCase):
         return element_count
 
     def test_post_with_image(self):
-        '''Проверка возможности загрузки изображений в посты и их
-        отображения'''
+        """Проверка возможности загрузки изображений в посты и их
+        отображения"""
         # Загружаем страницу и определяем количество искомых тэгов до
         # создания поста
         urls = (
@@ -372,11 +374,10 @@ class ImageTest(TestCase):
                     )
                 else:
                     self.assertTrue(elements_after[item] > 0)
-            self.assertTrue(True)
 
     def test_wrong_file_type(self):
-        '''Проверка возможности создания постов с загрузкой невалидных
-        файлов'''
+        """Проверка возможности создания постов с загрузкой невалидных
+        файлов"""
         wrong_image = SimpleUploadedFile(
             name='image.txt',
             content=b'asodjfewpjf39',
@@ -412,7 +413,7 @@ class ImageTest(TestCase):
             'media/posts/image.txt',
         )
         for path in paths:
-            if os.path.exists(path):
+            if os.path.exists(path):  # Возможно, стоит заменить на try-except
                 os.remove(path)
         shutil.rmtree(
             temp_dir,
@@ -441,8 +442,8 @@ class TestFollow(TestCase):
         cache.clear()
 
     def test_follow_auth(self):
-        '''Проверка возможности авторизированному пользователю подписываться
-        и отписываться от автора'''
+        """Проверка возможности авторизированному пользователю подписываться
+        и отписываться от автора"""
         response = self.client1.get(
             reverse(
                 'profile_follow',
@@ -476,7 +477,7 @@ class TestFollow(TestCase):
         )
 
     def test_unfollow_auth(self):
-        '''Проверка возможности отписки от автора'''
+        """Проверка возможности отписки от автора"""
         Follow.objects.create(user_id=self.user1.id, author_id=self.user2.id)
         # Всё же убедимся, что всё окей здесь
         self.assertEqual(Follow.objects.count(), 1)
@@ -487,8 +488,8 @@ class TestFollow(TestCase):
         self.assertEqual(Follow.objects.count(), 0, 'Не удалось отписаться')
 
     def test_follow_unauth(self):
-        '''Проверка поведение сервера в случае попытки неавторизованной
-         подписки или отписки'''
+        """Проверка поведение сервера в случае попытки неавторизованной
+         подписки или отписки"""
         login_url = reverse('login')
         urls = (
             reverse(
@@ -517,7 +518,7 @@ class TestFollow(TestCase):
                 self.assertEqual(followers.count(), 0)
 
     def test_self_follow(self):
-        '''Проверка невозможности подписки на самого себя'''
+        """Проверка невозможности подписки на самого себя"""
         self.client1.get(reverse('profile_follow', args=[self.user1.username]))
         # Убедимся, что количество подписчиков и подписок не изменилось
         followers = Follow.objects.filter(author=self.user1.id)
@@ -554,9 +555,9 @@ class TestFeed(Fixtures):
         cache.clear()
 
     def test_feed_followed(self):
-        '''Проверка появления новой записи в ленте у подписсчика,
+        """Проверка появления новой записи в ленте у подписсчика,
         но у других пользователей лента
-        должна оставаться пустой'''
+        должна оставаться пустой"""
         self.client.get(
             reverse(
                 'profile_follow',
@@ -575,7 +576,7 @@ class TestFeed(Fixtures):
         )
 
     def test_feed_unfollowed(self):
-        '''Проверка отсутсвия поста в ленте у неподписанного пользователя'''
+        """Проверка отсутсвия поста в ленте у неподписанного пользователя"""
         response = self.client3.get(reverse('follow_index'))
         paginator = response.context['paginator']
         if paginator is not None:
@@ -618,8 +619,8 @@ class TestComment(TestCase):
         )
 
     def test_comment_auth(self):
-        '''Создание комментария через веб-морду нашего сайта и
-        проверка валидности'''
+        """Создание комментария через веб-морду нашего сайта и
+        проверка валидности"""
         self.client.post(
             reverse(
                 'add_comment',
@@ -631,9 +632,10 @@ class TestComment(TestCase):
         comments = Comment.objects.all()
         # Проверяем, появилась-ли запись в БД...
         # И действительно нет смысла производить ресурсоемкую выборку
-        self.assertEqual(comments.count(), 1,
-                         msg='Количество созданных комментариев не '
-                             'соответсвует')
+        self.assertEqual(
+            comments.count(), 1,
+            msg='Количество созданных комментариев не соответсвует'
+        )
         comment = Comment.objects.first()
         # Воспльзуемся вынесенным методом
         self.comment_comparsion(
@@ -684,8 +686,8 @@ class TestHTTPCodes(TestCase):
         cache.clear()
 
     def test_not_found(self):
-        '''Проверка возвращаемых значений сервера для различных
-         несуществующих страниц'''
+        """Проверка возвращаемых значений сервера для различных
+         несуществующих страниц"""
         urls = (
             'somethingwrong',
             '256',
