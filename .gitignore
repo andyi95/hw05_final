@@ -30,3 +30,4 @@ sent_emails/
 .vscode/
 settings.json
 .pylintrc
+/db.json

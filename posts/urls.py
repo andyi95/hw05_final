@@ -29,4 +29,15 @@ urlpatterns = [
         views.add_comment,
         name='add_comment'
     ),
+    path(
+        '<str:username>/<int:post_id>/like/',
+        views.new_like,
+        name='new_like'
+    ),
+    path(
+        '<str:username>/<int:post_id>/dislike/',
+        views.dislike,
+        name='dislike'
+    ),
+
 ]

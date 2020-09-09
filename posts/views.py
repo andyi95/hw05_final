@@ -3,12 +3,15 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
+from django.db.models import F
+from django.http import HttpResponseRedirect
 
 from .forms import CommentForm, PostForm
-from .models import Comment, Follow, Group, Post
+from .models import Comment, Follow, Group, Post, Like
 
 
-@cache_page(20, cache='default', key_prefix='')
+
+# @cache_page(20, cache='default', key_prefix='')
 def index(request):
     latest = Post.objects.select_related('group', 'author').all()
     paginator = Paginator(latest, 10)
@@ -82,6 +85,9 @@ def profile(request, username):
     paginator = Paginator(posts, 10)
     page_num = request.GET.get('page')
     page = paginator.get_page(page_num)
+    likes=0
+    for post in posts:
+        likes += Like.objects.filter(post=post).count()
     return render(
         request,
         'posts/profile.html',
@@ -89,25 +95,40 @@ def profile(request, username):
             'page': page,
             'paginator': paginator,
             'author': user_profile,
-            'following': following
+            'following': following,
+            'author_likes': likes
         }
     )
 
 
 def post_view(request, username, post_id):
     post = get_object_or_404(Post, author__username=username, pk=post_id)
+    post.visits += 1
+    post.save()
     items = Comment.objects.filter(post_id=post_id)
     form = CommentForm(instance=None)
+    is_liked = post.like.filter(user=request.user)
+    likes = Like.objects.filter(post_id=post_id).count()
     return render(
         request,
         'posts/post.html',
         {
             'post': post,
             'author': post.author,
-            'items': items, 'form': form
+            'items': items, 'form': form,
+            'is_liked': is_liked,
+            'likes': likes
         }
     )
 
+@login_required
+def post_delete(request, username, post_id):
+    author = get_object_or_404(User, username=username)
+    post = Post.objects.get(pk=post_id)
+    if request.user != author:
+        return redirect("post", username=username, post_id=post_id)
+    post.delete()
+    return redirect("profile", username=username)
 
 @login_required
 def add_comment(request, username, post_id):
@@ -160,3 +181,23 @@ def page_not_found(request, exception):
         {'path': request.path},
         status=404
     )
+
+
+@login_required
+def new_like(request,username, post_id):
+    post = get_object_or_404(Post, author__username=username, pk=post_id)
+    created = Like.objects.get_or_create(user=request.user, post = post)
+    is_liked = False
+    if created:
+        is_liked = True
+    # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    # return redirect(request.path)
+    return redirect('post', username=post.author, post_id=post_id)
+
+
+@login_required
+def dislike(request, username, post_id):
+    post = get_object_or_404(Post, author__username=username, pk=post_id)
+    Like.objects.filter(user=request.user, post=post).delete()
+    return redirect('post', username=post.author, post_id=post_id)
+

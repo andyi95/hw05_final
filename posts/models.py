@@ -37,6 +37,10 @@ class Post(models.Model):
         verbose_name='Изображение поста',
         help_text='Изображение к посту'
     )
+    visits = models.PositiveIntegerField(
+        default=0,
+        verbose_name='Количество просмотров записи'
+    )
 
     class Meta:
         ordering = ('-pub_date',)
@@ -84,3 +88,17 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = ['user', 'author']
+
+class Like(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='liker',
+        verbose_name='Лайкер',
+    )
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='like'
+        )
+    created = models.DateTimeField(auto_now_add=True)

@@ -7,8 +7,11 @@
     <title>{% block title %}Заголовок страницы{% endblock %} | Yatube</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/fontawesome.css' %}">
+    <script src="{% static 'fontawesome/js/regular.js' %}"></script>
     <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
+
 </head>
 <body>
 {% include 'includes/nav.html' %}

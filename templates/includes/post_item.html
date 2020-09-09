@@ -1,10 +1,24 @@
 <div class="card mb-3 mt-1 shadow-sm">
 {% load thumbnail %}
+{% load static %}
     <!-- Отображение картинки -->
     {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
     <img class="img-thumbnail" src="{{ im.url }}" />
     {% endthumbnail %}
     <!-- Отображение текста поста -->
+<style>
+    .liked {
+        fill: #b21f2d;;
+        border-color: #b21f2d;
+        height: 30px;
+    }
+    .disliked{
+        fill: #f6f6f6;
+        border-color: #b21f2d;
+        height: 30px;
+    }
+</style>
+
     <div class="card-body">
         <p class="card-text">
            <p class=".d-inline-flex h5 text-gray-dark mb-2">
@@ -39,18 +53,35 @@
                     Нет комментариев
                     {% endif %}
                 </a>
-
                 <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group ">
+
                                  {% if user == post.author %}
+                                     <div class="btn-group ">
                  <a class="btn btn-sm text-muted" href="{% url 'post_edit' post.author.username post.id %}" role="button">
                         Редактировать
-                </a>
+                </a></div>
                 {% endif %}
-                        </div></div></div>
+                        </div></div>
+
                 <div class="d-flex justify-content-between align-items-right mr-2">
                 <a class="btn btn-sm text-muted" href="{% url 'post' post.author.username post.id %}">
                     {{ post.pub_date|date:"d M Y" }}</a>
+                </div></div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 ml-2">
+            <div class="btn-group">
+                {% if is_liked %}
+                             <a class="btn btn-light text-dark" href="{% url 'dislike' post.author.username post.id%}" role='button'>
+                                 Не нравится
+                        </a>
+                {% else %}
+                        <a class="btn btn-primary text-light" href="{% url 'new_like' post.author.username post.id %}" role='button'>
+                            Нравится</a>
+                {% endif %}
+            </div>
+                <div class="d-flex justify-content-between align-items-right mr-2">
+                    <div class="btn-group text-muted  btn-sm "> Лайков: {{ likes }} {% if likes.number == 0 or None %} 0 {% endif %}</div>
+                    <div class="btn-group text-muted  btn-sm ">Просмотров: {{ post.visits }}</div>
                 </div>
         </div>
 </div>

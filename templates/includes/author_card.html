@@ -20,7 +20,8 @@
                                     <li class="list-group-item">
                                             <div class="h6 text-muted">
                                                 <!-- Количество записей -->
-                                                Записей: {{ author.posts.count }}
+                                                Записей: {{ author.posts.count }} <br>
+                                                Лайков: {{ author_likes }}
                                             </div>
                                     </li>
                                 {% if profile != request.user%}

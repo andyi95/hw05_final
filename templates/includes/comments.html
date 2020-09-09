@@ -2,18 +2,19 @@
 <!-- Комментарии -->
 {% if items %}
 {% for item in items %}
+<div class="card mb-3 mt-1 shadow-sm">
 <div class="card-body">
-<div class="card-text">
-    <p class=".d-inline-flex h6 text-gray-dark mb-2">
+    <div class=".d-inline-flex h6 text-gray-dark mb-2">
     <a
         href="{% url 'profile' item.author.username %}"
         name="comment_{{ item.id }}"
         >{{ item.author.username }}</a>
-    </p>
-    <h6 class="mt-0">{{ item.created | date:"d M Y"}}</h6>
-    <p>{{ item.text }}</p>
+
+    <div class="float-right text-muted small">{{ item.created | date:"d M Y"}}</div></div>
+    <div class="card-text">{{ item.text }}</div>
 </div>
 </div>
+
 
 {% endfor %}
 {% endif %}
