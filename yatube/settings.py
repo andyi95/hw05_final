@@ -1,7 +1,9 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = '4jos8js))4%=hw)ih8ha)pw8ysm92$md!55y%i!sur$^c%=dcm'
+SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
@@ -14,6 +16,7 @@ INSTALLED_APPS = [
     'posts',
     'django.contrib.sites',
     'django.contrib.flatpages',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

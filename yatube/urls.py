@@ -12,6 +12,7 @@ handler404 = 'posts.views.page_not_found' # noqa
 handler500 = 'posts.views.server_error' # noqa
 
 urlpatterns = [
+    path(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
     path('', include('posts.urls')),
     path('about/', include('django.contrib.flatpages.urls')),

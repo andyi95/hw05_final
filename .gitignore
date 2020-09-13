@@ -3,6 +3,7 @@ env/
 venv/
 .venv
 .venv/
+.env
 
 __pycache__/
 *.py[cod]
@@ -31,3 +32,4 @@ sent_emails/
 settings.json
 .pylintrc
 /db.json
+/.env

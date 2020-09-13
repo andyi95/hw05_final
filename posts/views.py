@@ -19,6 +19,7 @@ def index(request):
     page = paginator.get_page(page_number)
     # узнаем, подписан ли на кого-то залогиненный пользователь
     follow = request.user.is_authenticated and Follow.objects.filter(user=request.user)
+    # likes = Like.objects.filter(post=latest).count()
     return render(
         request,
         'index.html',
@@ -128,7 +129,7 @@ def post_delete(request, username, post_id):
     if request.user != author:
         return redirect("post", username=username, post_id=post_id)
     post.delete()
-    return redirect("profile", username=username)
+    return redirect("index")
 
 @login_required
 def add_comment(request, username, post_id):

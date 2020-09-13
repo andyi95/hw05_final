@@ -11,11 +11,52 @@
     <script src="{% static 'fontawesome/js/regular.js' %}"></script>
     <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <style>
+    .liked {
+        fill: #b21f2d;;
+        border-color: #b21f2d;
+        height: 30px;
+    }
+    .disliked{
+        fill: #f6f6f6;
+        border-color: #b21f2d;
+        height: 30px;
+    }
+    </style>
+<script>
+    function show_window(param) {
+        var url = param.getAttribute('data-delete-url');
+        $.confirm({
+            title: 'Вы уверены?!',
+            content: 'Пост будет удален, это действие нельзя отменить',
+            buttons: {
+                confirm: {
+                    text: 'Да, удалить',
+                    btnClass: 'btn btn-sm btn-danger',
+                    action: function () {
+                        $.fadeOut;
+                        location.href=url;
+                    }
+                },
+                cancel: {
+                    text: 'Нет, отменить',
+                    btnClass: 'btn btn-sm btn-primary',
+                    action: function () {
+                        $.fadeOut;
+                    }
 
+                },
+            }
+        });
+    };
+</script>
 </head>
 <body>
 {% include 'includes/nav.html' %}
 <main>
+
     <div class="container">
         {% block content %}
             <!-- page content -->

@@ -6,18 +6,7 @@
     <img class="img-thumbnail" src="{{ im.url }}" />
     {% endthumbnail %}
     <!-- Отображение текста поста -->
-<style>
-    .liked {
-        fill: #b21f2d;;
-        border-color: #b21f2d;
-        height: 30px;
-    }
-    .disliked{
-        fill: #f6f6f6;
-        border-color: #b21f2d;
-        height: 30px;
-    }
-</style>
+
 
     <div class="card-body">
         <p class="card-text">
@@ -28,10 +17,12 @@
                 #{{ post.group.title }}
         </a>
         {% endif %}</p>
+
     <!-- в случае, если текст поста очень большой, то его укорачиваем и предлагаем переити на страницу поста!-->
-     {% if full_text or post.text|length <= 300 %}
+
+     {% if full_text or post.text|length <= 300%}
                         <p>{{ post.text|linebreaksbr }}</p>
-                    {% else %}
+                    {% elif request.path is not '/' %}
                         <p>{{ post.text|linebreaksbr|truncatechars:300 }}
                             <a class="btn btn-sm text-muted" href="{% url 'post' post.author.username post.id %}" role="button">
                                 Читать далее>>
@@ -60,6 +51,11 @@
                  <a class="btn btn-sm text-muted" href="{% url 'post_edit' post.author.username post.id %}" role="button">
                         Редактировать
                 </a></div>
+                        </div>
+                <div class="d-flex justify-content-between align-items-center">
+                                     <div class="btn-group ">
+                 <button class="btn btn-sm text-danger" data-delete-url="{% url 'post_delete' post.author.username post.id %}" onclick="show_window(this)">Удалить</button>
+               </div>
                 {% endif %}
                         </div></div>
 
@@ -80,7 +76,7 @@
                 {% endif %}
             </div>
                 <div class="d-flex justify-content-between align-items-right mr-2">
-                    <div class="btn-group text-muted  btn-sm "> Лайков: {{ likes }} {% if likes.number == 0 or None %} 0 {% endif %}</div>
+                    <div class="btn-group text-muted  btn-sm "> Лайков: {{ post.like.count }} {% if likes.number == 0 or None %} 0 {% endif %}</div>
                     <div class="btn-group text-muted  btn-sm ">Просмотров: {{ post.visits }}</div>
                 </div>
         </div>
